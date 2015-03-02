@@ -2,6 +2,7 @@ var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
+var session = require('express-session');
 
 
 var db = require('./app/config');
@@ -22,22 +23,33 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
+app.use(session({
+  secret: 'choose wisely',
+  saveUninitialized: true,
+  resave: true
+}));
 
 app.get('/',
 function(req, res) {
-  res.render('index');
+  restrict(req, res, function() {
+    res.render('index');
+  });
 });
 
 app.get('/create',
 function(req, res) {
-  res.render('index');
+  restrict(req, res, function() {
+    res.render('index');
+  });
 });
 
 app.get('/links',
 function(req, res) {
+  restrict(req, res, function() {
+    Links.reset().fetch().then(function(links) {
+      res.send(200, links.models);
+    });
   // Resets the Links collection and fetches the default set of models
-  Links.reset().fetch().then(function(links) {
-    res.send(200, links.models);
   });
 });
 
@@ -78,8 +90,33 @@ function(req, res) {
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+app.get('/login', function(req, res) {
+  res.render('login');
+});
 
+app.post('/login', function(req, res) {
+  var username = req.body.username;
+  var password = req.body.password;
+  req.session.user = username;
 
+  if (username === 'demo' && password === 'demo') {
+    res.redirect('index');
+  } else {
+    res.redirect('login');
+  }
+
+});
+
+function restrict(req, res, next) {
+  req.session.user = req.session.user || '';
+  console.log('req.session.user: ', req.session.user);
+  if (req.session.user !== '') {
+    next();
+  } else {
+    req.session.error = 'Access denied!!1! ;)';
+    res.redirect('/login');
+  }
+};
 
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
