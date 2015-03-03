@@ -1,33 +1,36 @@
-<script id='layout' type='text/x-handlebars-template'>
-  <div class='navigation'>
-  <ul>
-    <li><a href='#' class='index'>All Links</a></li>
-    <li><a href='#' class='create'>Shorten</a></li>
-    <li><a href='/logout' class='logout'>Log Out</a></li>
+<script id="layout" type="text/x-handlebars-template">
+  <div class="navigation container">
+  <ul class="nav-list">
+    <li class="nav-list-item"><a href="#" class="nav-link index">All Links</a></li>
+    <li class="nav-list-item"><a href="#" class="nav-link create">Shorten</a></li>
+    <li class="nav-list-item logout"><a href="/logout" class="nav-link">Log Out</a></li>
   </ul>
   </div>
-  <div id='container'></div>
+  <div id="content" class="container"></div>
 </script>
 
 
-<script id='link' type='text/x-handlebars-template'>
-  <img src='/redirect_icon.png'/>
-  <div class='info'>
-    <div class='visits'><span class='count'>{{visits}}</span>Visits</div>
-    <div class='title'>{{title}}</div>
-    <div class='original'>{{url}}</div>
-    <a href='{{base_url}}/{{code}}'>{{base_url}}/{{code}}</a>
+<script id="link" type="text/x-handlebars-template">
+  <div class="link-img fa fa-star"></div>
+  <div class="info">
+    <h2 class="title">{{title}}</h2>
+    <div class="original">{{url}}</div>
+    <a href="{{base_url}}/{{code}}">{{base_url}}/{{code}}</a>
+  </div>
+  <div class="visits">
+    <p class="count">{{visits}}</p>
+    <p class="count-label">Visits</p>
   </div>
 </script>
 
 
-<script id='create' type='text/x-handlebars-template'>
+<script id="create" type="text/x-handlebars-template">
   <form>
-      <input class='text' type='text' name='url'>
-      <input type='submit' value='Shorten'>
+      <input class="text" type="text" name="url">
+      <input type="submit" value="Shorten">
   </form>
-  <img class='spinner' src='/spiffygif_46x46.gif'>
-  <div class='message'></div>
+  <img class="spinner" src="/spiffygif_46x46.gif">
+  <div class="message"></div>
 </script>
 
 <script>
@@ -41,12 +44,12 @@
   });
 </script>
 
-<script src='/client/app.js'></script>
-<script src='/client/link.js'></script>
-<script src='/client/links.js'></script>
-<script src='/client/linkView.js'></script>
-<script src='/client/linksView.js'></script>
-<script src='/client/createLinkView.js'></script>
-<script src='/client/createLoginView.js'></script>
-<script src='/client/router.js'></script>
+<script src="/client/app.js"></script>
+<script src="/client/link.js"></script>
+<script src="/client/links.js"></script>
+<script src="/client/linkView.js"></script>
+<script src="/client/linksView.js"></script>
+<script src="/client/createLinkView.js"></script>
+<script src="/client/createLoginView.js"></script>
+<script src="/client/router.js"></script>
 
