@@ -24,9 +24,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
 app.use(session({
+  // genid: function(req) {
+  //   return genuuid();
+  // },
   secret: 'choose wisely',
-  saveUninitialized: true,
-  resave: true
+  saveUninitialized: false,
+  resave: false,
+  unset: 'destroy'
 }));
 
 app.get('/',
@@ -46,21 +50,27 @@ function(req, res) {
 app.get('/links',
 function(req, res) {
   restrict(req, res, function() {
-    Links.reset().fetch().then(function(links) {
-      res.send(200, links.models);
+    new User({username: req.session.user}).fetch().then(function(user) {
+      Links.reset()
+        .query('where', 'user_id', '=', user.get('id'))
+        .fetch().then(function(links) {
+          res.send(200, links.models);
+      });
     });
-  // Resets the Links collection and fetches the default set of models
   });
 });
 
 app.get('/logout',
   function(req, res) {
-    res.render('login');
+    req.session.destroy(function(err) {
+      if (err) { throw err; }
+      console.log('session deleted');
+      res.render('login');
+    });
   }
 );
 
-app.post('/links',
-function(req, res) {
+app.post('/links', function(req, res) {
   var uri = req.body.url;
 
   if (!util.isValidUrl(uri)) {
@@ -68,46 +78,48 @@ function(req, res) {
     return res.send(404);
   }
 
-  new Link({ url: uri }).fetch().then(function(found) {
-    if (found) {
-      res.send(200, found.attributes);
-    } else {
-      util.getUrlTitle(uri, function(err, title) {
-        if (err) {
-          console.log('Error reading URL heading: ', err);
-          return res.send(404);
-        }
+  new User({username: req.session.user}).fetch().then(function(user) {
+    new Link({ url: uri }).fetch().then(function(found) {
+      if (found) {
+        res.send(200, found.attributes);
+      } else {
+        util.getUrlTitle(uri, function(err, title) {
+          if (err) {
+            console.log('Error reading URL heading: ', err);
+            return res.send(404);
+          }
 
-        var link = new Link({
-          url: uri,
-          title: title,
-          base_url: req.headers.origin
-        });
+          var link = new Link({
+            url: uri,
+            title: title,
+            base_url: req.headers.origin,
+            user_id: user.get('id')
+          });
 
-        link.save().then(function(newLink) {
-          Links.add(newLink);
-          res.send(200, newLink);
-        });
-      });
-    }
-  });
-});
+          link.save().then(function(newLink) {
+            Links.add(newLink);
+            res.send(200, newLink);
+          }); // end link.save()
+        }); // end util.getUrlTitle
+      } // end if-else
+    }); // end new Link
+  }); // end new User
+}); // end app.post
 
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
-function hash(password) {
-  bcrypt.hash(password, null, null, function(err, hash) {
-    if (err) {
-      throw err;
-    }
-
-    return hash;
-  });
-}
 
 app.get('/login', function(req, res) {
-  res.render('login');
+  var username = req.session.user;
+  new User({ 'username': username }).fetch()
+    .then(function(found) {
+      if (found) {
+        res.redirect('index');
+      } else {
+        res.render('login');
+      }
+    });
 });
 
 app.post('/login', function(req, res) {
@@ -145,7 +157,7 @@ app.post('/signup', function(req, res) {
   var username = req.body.username;
   var password = req.body.password;
 
-  new User({'username': username }).fetch()
+  new User({ 'username': username }).fetch()
     .then(function(found) {
       if (found) {
         res.send(200, found.attributes);
