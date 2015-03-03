@@ -3,7 +3,7 @@ var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
 var session = require('express-session');
-
+var bcrypt = require('bcrypt-nodejs');
 
 var db = require('./app/config');
 var Users = require('./app/collections/users');
@@ -90,6 +90,16 @@ function(req, res) {
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+function hash(password) {
+  bcrypt.hash(password, null, null, function(err, hash) {
+    if (err) {
+      throw err;
+    }
+
+    return hash;
+  });
+}
+
 app.get('/login', function(req, res) {
   res.render('login');
 });
@@ -99,13 +109,90 @@ app.post('/login', function(req, res) {
   var password = req.body.password;
   req.session.user = username;
 
-  if (username === 'demo' && password === 'demo') {
-    res.redirect('index');
-  } else {
-    res.redirect('login');
-  }
+  // if (username === 'demo' && password === 'demo') {
+  //   res.redirect('index');
+  // } else {
+  //   res.redirect('login');
+  // }
+  //
 
+  // var hashedPassword = hash(password);
+
+  new User({ 'username': username }).fetch()
+    .then(function(found) {
+      if (found) {
+        bcrypt.hash(password, null, null, function(err, hash) {
+          if (err) {
+            throw err;
+          }
+
+          bcrypt.compare(password, hash, function(err, result) {
+            if (err) {
+              throw err;
+            }
+
+            // res.send(200);
+            res.redirect('index');
+          });
+        });
+      } else {
+        // res.send(404);
+        res.redirect('login');
+      }
+    });
 });
+
+app.get('/signup', function(req, res) {
+  res.render('signup');
+});
+
+app.post('/signup', function(req, res) {
+  var username = req.body.username;
+  var password = req.body.password;
+
+  var hashedPassword = hash(password);
+
+  new User({'username': username, 'hash': hashedPassword }).fetch()
+    .then(function(found) {
+      if (found) {
+        res.send(200, found.attributes);
+        res.redirect('login');
+      } else {
+         bcrypt.hash(password, null, null, function(err, hash) {
+          if (err) {
+            throw err;
+          }
+
+          var user = new User({
+            username: username,
+            hash: hash
+          });
+
+          user.save().then(function() {
+            console.log('New user created');
+            res.redirect('login');
+          });
+        });
+      }
+    });
+});
+      // util.getUrlTitle(uri, function(err, title) {
+      //   if (err) {
+      //     console.log('Error reading URL heading: ', err);
+      //     return res.send(404);
+      //   }
+
+      //   var link = new Link({
+      //     url: uri,
+      //     title: title,
+      //     base_url: req.headers.origin
+      //   });
+
+      //   link.save().then(function(newLink) {
+      //     Links.add(newLink);
+      //     res.send(200, newLink);
+      //   });
+      // });
 
 function restrict(req, res, next) {
   req.session.user = req.session.user || '';
@@ -114,9 +201,9 @@ function restrict(req, res, next) {
     next();
   } else {
     req.session.error = 'Access denied!!1! ;)';
-    res.redirect('/login');
+    res.redirect('login');
   }
-};
+}
 
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
