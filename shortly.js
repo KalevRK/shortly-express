@@ -110,20 +110,20 @@ app.post('/login', function(req, res) {
   req.session.user = username;
 
   new User({ 'username': username }).fetch()
-    .then(function(found) {
-      if (found) {
-        bcrypt.hash(password, null, null, function(err, hash) {
+    .then(function(model) {
+      if (model) {
+        var storedHash = model.get('hash');
+
+        bcrypt.compare(password, storedHash, function(err, result) {
           if (err) {
             throw err;
           }
 
-          bcrypt.compare(password, hash, function(err, result) {
-            if (err) {
-              throw err;
-            }
-
+          if (result) {
             res.redirect('/');
-          });
+          } else {
+            res.redirect('/login');
+          }
         });
       } else {
         res.redirect('/login');
