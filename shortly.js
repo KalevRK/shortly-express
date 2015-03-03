@@ -109,15 +109,6 @@ app.post('/login', function(req, res) {
   var password = req.body.password;
   req.session.user = username;
 
-  // if (username === 'demo' && password === 'demo') {
-  //   res.redirect('index');
-  // } else {
-  //   res.redirect('login');
-  // }
-  //
-
-  // var hashedPassword = hash(password);
-
   new User({ 'username': username }).fetch()
     .then(function(found) {
       if (found) {
@@ -131,13 +122,11 @@ app.post('/login', function(req, res) {
               throw err;
             }
 
-            // res.send(200);
-            res.redirect('index');
+            res.redirect('/');
           });
         });
       } else {
-        // res.send(404);
-        res.redirect('login');
+        res.redirect('/login');
       }
     });
 });
@@ -150,9 +139,7 @@ app.post('/signup', function(req, res) {
   var username = req.body.username;
   var password = req.body.password;
 
-  var hashedPassword = hash(password);
-
-  new User({'username': username, 'hash': hashedPassword }).fetch()
+  new User({'username': username }).fetch()
     .then(function(found) {
       if (found) {
         res.send(200, found.attributes);
@@ -170,33 +157,15 @@ app.post('/signup', function(req, res) {
 
           user.save().then(function() {
             console.log('New user created');
-            res.redirect('login');
+            res.redirect('/');
           });
         });
       }
     });
 });
-      // util.getUrlTitle(uri, function(err, title) {
-      //   if (err) {
-      //     console.log('Error reading URL heading: ', err);
-      //     return res.send(404);
-      //   }
-
-      //   var link = new Link({
-      //     url: uri,
-      //     title: title,
-      //     base_url: req.headers.origin
-      //   });
-
-      //   link.save().then(function(newLink) {
-      //     Links.add(newLink);
-      //     res.send(200, newLink);
-      //   });
-      // });
 
 function restrict(req, res, next) {
   req.session.user = req.session.user || '';
-  console.log('req.session.user: ', req.session.user);
   if (req.session.user !== '') {
     next();
   } else {
