@@ -90,7 +90,6 @@ h2 {
   cursor: pointer;
   overflow: hidden;
   padding: 1em;
-  border-bottom: 2px solid #fff;
 }
 
 .link:hover, .link:nth-of-type(even):hover {
@@ -98,7 +97,7 @@ h2 {
 }
 
 .link:nth-of-type(even) {
-  background: #F3F3F3;
+  background: #E8E8DC;
 }
 
 .link-img {
