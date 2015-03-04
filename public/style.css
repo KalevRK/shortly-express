@@ -1,6 +1,8 @@
 body {
   margin: 0;
+  font-weight: 300;
   font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background: #DFDFD5;
 }
 
 a {
@@ -9,7 +11,7 @@ a {
 }
 
 h1 {
-  font-weight: 100;
+  font-weight: 300;
   font-size: 2.5em;
   margin: 0.5em 0;
 }
@@ -18,15 +20,27 @@ h2 {
   margin: 0;
 }
 
+.text-center {
+  text-align: center;
+}
+
 .container {
   width: 80%;
   max-width: 850px;
   margin: 0 auto;
 }
 
+.box {
+  width: 400px;
+  padding: 2em;
+  margin: 4em auto;
+  background: #fff;
+  box-shadow: 1px 1px 6px #b1b1b1;
+  border-radius: 10px;
+}
+
 .navigation {
   width: 100%;
-  height: 40px;
   background: #37BAA8;
   border-radius: 4px;
 }
@@ -56,11 +70,12 @@ h2 {
 .nav-link {
   color: #fff;
   width: 100px;
-  height: 20px;
   line-height: 20px;
-  padding: 10px;
+  font-weight: 400;
+  padding: 1em;
   display: block;
   text-align: center;
+  text-shadow: -1px -1px 2px #329486;
 }
 
 .nav-link:hover, .selected:hover {
@@ -75,15 +90,15 @@ h2 {
   cursor: pointer;
   overflow: hidden;
   padding: 1em;
-  border-bottom: 1px dotted #5ad5c4;
+  border-bottom: 2px solid #fff;
 }
 
-.link:hover {
-  background-color: #E3FFFB;
+.link:hover, .link:nth-of-type(even):hover {
+  background: #FFFFF5;
 }
 
 .link:nth-of-type(even) {
-
+  background: #F3F3F3;
 }
 
 .link-img {
@@ -106,7 +121,6 @@ h2 {
 
 .count {
   font-size: 3em;
-  font-weight: 100;
   margin: 0;
 }
 
@@ -116,52 +130,69 @@ h2 {
   margin: 0;
 }
 
-.link .title {
-  font-weight: 600;
+.title {
+  font-weight: 400;
 }
 
-.link .original {
+.original {
   color: #aaa;
-  font-size: 12px;
 }
-
-/*.link .info {
-  margin-left: 55px;
-}*/
 
 form {
-  margin: 10px;
+  padding: 1em 0;
+  float: left;
 }
 
-form input[type=text], form input[type=password] {
+input {
+  font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  display: inline-block;
+  font-size: 1em;
+  margin: 1em 0;
+  border-radius: 4px;
+}
+
+input[type="text"], #password {
   width: 360px;
-  display: block;
-  font-size: 13px;
-  padding: 5px;
-  margin-bottom: 5px;
+  padding: 0.5em;
+  margin: 0 0.5em 0 0;
+  border: 1px solid #C8C8C8;
+  /*box-shadow: -1px -1px 2px #B1B1B1;*/
+}
+
+input[type="submit"] {
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 300;
+  padding: 0.5em 1em;
+  background: #37BAA8;
+  text-shadow: -1px -1px 2px #329486;
+  /*box-shadow: 1px 1px 2px #329486;*/
+}
+
+input[type="submit"]:hover {
+  opacity: 0.8;
+}
+
+label {
+  line-height: 2em;
+}
+
+.row {
+  margin: 1em 0;
 }
 
 .error {
   background-color: #fee;
   color: #a33;
   padding: 10px;
-  margin: 0 10px;
+  border-radius: 4px;
 }
 
-.creator {
-  height: 50px;
-}
-
-.creator form {
-  float: left;
-  height: 80px;
-}
-
-.creator img.spinner {
-  height: 46px;
-  margin-bottom: 5px;
-  padding: 10px;
+.spinner {
   display: none;
+  float: left;
+  margin: 1.8em 0 0 1em;
 }
 
 .creator .message {
